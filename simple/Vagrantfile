@@ -1,0 +1,24 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # set the box
+  config.vm.box = "ubuntu/xenial64"
+
+  # make the vm accessible from the host
+  config.vm.network "forwarded_port", guest: 80, host: 8787
+
+  # give it a unique hostname so we don't collide with other VMs with the same box
+  config.vm.hostname = "vagrant-intro-simple"
+
+  # do some stuff after the initial boot... i.e.: install apache and create a link to the source code
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get update
+    apt-get install -y apache2
+
+    rm -rf /var/www/html
+    ln -fs /vagrant /var/www/html
+
+    systemctl restart apache2
+  SHELL
+end
